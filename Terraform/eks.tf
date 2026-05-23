@@ -35,47 +35,13 @@ module "eks" {
     aws-ebs-csi-driver = {
       most_recent    = true
       before_compute = false
-
-      configuration_values = jsonencode({
-        controller = {
-          tolerations = [
-            {
-              key      = "CriticalAddonsOnly"
-              operator = "Exists"
-              effect   = "NoSchedule"
-            }
-          ]
-          nodeSelector = {
-            role = "system" # 👈 Controller Deployment sirf system nodes par chalegi
-          }
-        }
-        node = {
-          tolerations = [
-            {
-              key      = "CriticalAddonsOnly"
-              operator = "Exists"
-              effect   = "NoSchedule"
-            }
-          ]
-          # 🟢 Node DaemonSet pure cluster (Karpenter + System) par chalega, isliye selector nahi hai
-        }
-      })
     }
-
     eks-pod-identity-agent = {
-      most_recent = true
-      configuration_values = jsonencode({
-        tolerations = [
-          {
-            key      = "CriticalAddonsOnly"
-            operator = "Exists"
-            effect   = "NoSchedule"
-          }
-        ]
-        # 🟢 Pod Identity DaemonSet pure cluster par chalega, isliye selector nahi hai
-      })
-    }
+     most_recent = true
+   }
   }
+
+
 
   eks_managed_node_groups = {
     system = {
@@ -109,42 +75,6 @@ module "eks" {
 }
 
 # ─────────────────────────────────────────────
-# EBS CSI Driver IAM — Pod Identity
-# ─────────────────────────────────────────────
-
-data "aws_iam_policy_document" "ebs_csi_pod_identity_assume" {
-  statement {
-    actions = ["sts:AssumeRole", "sts:TagSession"]
-    principals {
-      type        = "Service"
-      identifiers = ["pods.eks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "ebs_csi_pod_identity" {
-  name               = "${var.cluster_name}-ebs-csi-pod-identity-role"
-  assume_role_policy = data.aws_iam_policy_document.ebs_csi_pod_identity_assume.json
-
-  tags = {
-    Environment = var.environment
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "ebs_csi_pod_identity" {
-  role       = aws_iam_role.ebs_csi_pod_identity.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-}
-
-resource "aws_eks_pod_identity_association" "ebs_csi" {
-  cluster_name    = module.eks.cluster_name
-  namespace       = "kube-system"
-  service_account = "ebs-csi-controller-sa"
-  role_arn        = aws_iam_role.ebs_csi_pod_identity.arn
-
-  depends_on = [module.eks]
-}
-
 # ─────────────────────────────────────────────
 # Karpenter IAM — Pod Identity
 # ─────────────────────────────────────────────
