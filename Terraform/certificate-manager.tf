@@ -6,10 +6,18 @@ resource "helm_release" "cert_manager" {
   namespace        = "cert-manager"
   create_namespace = true
 
-  set {
-    name  = "installCRDs"
-    value = "true"
-  }
+  # 🟢 Native YAML block for super clean scheduling config
+  values = [<<-EOT
+    installCRDs: true
+    nodeSelector:
+      role: system
+    tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "system"
+      effect: "NoSchedule"
+  EOT
+  ]
 
   depends_on = [module.eks]
 }
@@ -21,16 +29,20 @@ resource "helm_release" "cert_manager_duckdns" {
   version    = "v0.3.0"
   namespace  = "cert-manager"
 
-  set {
-    name  = "certManager.namespace"
-    value = "cert-manager"
-  }
+  values = [<<-EOT
+    certManager:
+      namespace: cert-manager
+    groupName: acme.webhook.duckdns.org
+    nodeSelector:
+      role: system
+    tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "system"
+      effect: "NoSchedule"
+  EOT
+  ]
 
-  set {
-    name  = "groupName"
-    value = "acme.webhook.duckdns.org"
-  }
-  
   depends_on = [helm_release.cert_manager]
 }
 
@@ -58,7 +70,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: muhammadali792@github
+    email: muhammadali792@gmail.com
     privateKeySecretRef:
       name: letsencrypt-account-key
     solvers:
