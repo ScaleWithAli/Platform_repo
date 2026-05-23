@@ -125,6 +125,8 @@ module "karpenter_iam" {
 
   enable_pod_identity             = true
   create_pod_identity_association = true
+  namespace       = "karpenter"
+  service_account = "karpenter"
 
   create_node_iam_role = true
   create_access_entry  = true
