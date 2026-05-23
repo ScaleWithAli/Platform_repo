@@ -28,17 +28,14 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # 🟢 HARD RESET STEP: S3 Native lockfile ko zabardasti delete karna
       - name: Force Clean S3 Native Lockfile
         run: |
-          echo "Checking and removing stubborn S3 native lockfile..."
-          # Terraform s3 native locking is path par lock file banati hai: <key>.lockfile
           aws s3 rm s3://${{ vars.TF_STATE_BUCKET }}/cloudaura/terraform.tfstate.lockfile || true
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.15.4" # Explicit version jisme lock laga tha
+          terraform_version: "1.15.4"
           terraform_wrapper: false
 
       - name: Terraform Init
@@ -51,6 +48,13 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Import Existing Resources
+        run: |
+          terraform import aws_eks_addon.ebs_csi cloudaura-eks-clusterv2:aws-ebs-csi-driver || true
+          terraform import helm_release.karpenter karpenter/karpenter || true
+          terraform import helm_release.cert_manager cert-manager/cert-manager || true
+          terraform import 'module.eks_addons.module.ingress_nginx.helm_release.this[0]' ingress-nginx/ingress-nginx || true
+          terraform import 'module.eks_addons.module.kube_prometheus_stack.helm_release.this[0]' kube-prometheus-stack/kube-prometheus-stack || true
+
       - name: Terraform Apply
-        id: apply
         run: terraform apply -auto-approve
