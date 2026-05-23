@@ -9,7 +9,6 @@ permissions:
   id-token: write
   contents: read
 
-# GLOBAL FIX: Ab saare steps automatic aapke "Terraform" folder ke andar chalenge
 defaults:
   run:
     working-directory: ./Terraform
@@ -29,41 +28,29 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      # 🟢 HARD RESET STEP: S3 Native lockfile ko zabardasti delete karna
+      - name: Force Clean S3 Native Lockfile
+        run: |
+          echo "Checking and removing stubborn S3 native lockfile..."
+          # Terraform s3 native locking is path par lock file banati hai: <key>.lockfile
+          aws s3 rm s3://${{ vars.TF_STATE_BUCKET }}/cloudaura/terraform.tfstate.lockfile || true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "latest"
-          terraform_wrapper: false # Wrapper band taake binary directly execute ho
+          terraform_version: "1.15.4" # Explicit version jisme lock laga tha
+          terraform_wrapper: false
 
       - name: Terraform Init
         run: |
           terraform init \
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=cloudaura/terraform.tfstate" \
-            -backend-config="region=${{ vars.AWS_REGION }}" \
-            -backend-config="use_lockfile=true"
+            -backend-config="region=${{ vars.AWS_REGION }}"
 
       - name: Terraform Validate
         run: terraform validate
 
-      # 🟢 Apply Step (Bina import locks ke sukoon se chalega)
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
-
-      # 🟢 AUTOMATED FORCE-UNLOCK: Agar pipeline cancel ho ya fail ho, lock khud release hoga
-      - name: Force Unlock on Cancellation or Failure
-        if: ${{ cancelled() || failure() }}
-        run: |
-          echo "Pipeline stop ya fail hui hai. State lock check kar ke break kar rahe hain..."
-          
-          # State info se lock ki ID nikalne ki koshish (JSON format parsing)
-          # Agar lock laga hua mila, toh use force-unlock kar diya jayega
-          LOCK_ID=$(terraform providers lock 2>&1 | grep -oE '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}' | head -n 1 || true)
-          
-          if [ ! -z "$LOCK_ID" ]; then
-            echo "Lock ID mili: $LOCK_ID. Unlocking backend state dynamically..."
-            terraform force-unlock -force $LOCK_ID
-          else
-            echo "Koi lock ID nahi mili ya lock pehle hi released hai."
-          fi
