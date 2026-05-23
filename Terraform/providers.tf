@@ -16,7 +16,7 @@ terraform {
     }
     kubectl = {
       source  = "alekc/kubectl"
-      version = "~> 2.14"
+      version = "~> 1.16"
     }
   }
 
