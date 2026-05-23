@@ -9,6 +9,11 @@ permissions:
   id-token: write
   contents: read
 
+# 🟢 GLOBAL FIX: Ab saare steps automatic aapke "Terraform" folder ke andar chalenge
+defaults:
+  run:
+    working-directory: ./Terraform
+
 jobs:
   terraform_deploy:
     name: "Terraform Apply"
@@ -28,6 +33,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "latest"
+          terraform_wrapper: false # Wrapper band taake binary directly execute ho
 
       - name: Terraform Init
         run: |
@@ -45,14 +51,3 @@ jobs:
 
       - name: Terraform Apply (Route53 Zone First)
         run: terraform apply -auto-approve
-
-      # 💡 Senior Tip: Agar outputs dekhne hain toh formal standard yeh hai:
-      # - name: Show Nameservers
-      #   run: terraform output name_servers
-
-      # Full apply tab run karo jab nameservers domain registrar pe update ho jayein
-      # - name: Terraform Apply (Full)
-      #   run: |
-      #     terraform apply \
-      #       -var="domain_name=${{ vars.DOMAIN_NAME }}" \
-      #       -auto-approve
