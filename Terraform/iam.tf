@@ -27,5 +27,5 @@ resource "aws_eks_pod_identity_association" "addon_associations" {
   namespace       = each.value.namespace
   service_account = each.value.service_account
   role_arn        = aws_iam_role.addon_roles[each.key].arn
-
+} 
  
