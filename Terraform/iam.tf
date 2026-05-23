@@ -27,5 +27,15 @@ resource "aws_eks_pod_identity_association" "addon_associations" {
   namespace       = each.value.namespace
   service_account = each.value.service_account
   role_arn        = aws_iam_role.addon_roles[each.key].arn
-} 
- 
+
+  depends_on = [module.eks]
+}
+
+variable "eks_addons_security_config" {
+  description = "Map of EKS addons configuration for dynamic Pod Identity IAM roles"
+  type = map(object({
+    namespace       = string
+    service_account = string
+    policy_arn      = string
+  }))
+}
