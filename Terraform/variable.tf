@@ -15,7 +15,7 @@ variable "environment" {
 
 variable "cluster_name" {
   type    = string
-  default = "cloudaura-eks-cluster"
+  default = "cloudaura-eks-clusterv2"
 }
 
 variable "domain_name" {
