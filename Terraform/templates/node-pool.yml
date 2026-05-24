@@ -1,5 +1,3 @@
-resource "kubectl_manifest" "node_pool_general" {
-  yaml_body = <<-YAML
 apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
@@ -33,9 +31,7 @@ spec:
           values: ["spot", "on-demand"]
         - key: karpenter.k8s.aws/instance-category
           operator: In
-          values: ["c", "m", "r", "t"] # 🟢 Compute, Memory, General aur Burstable sab allow kar diye
+          values: ["c", "m", "r", "t"]
         - key: karpenter.k8s.aws/instance-generation
           operator: Gt
-          values: ["4"] # 🟢 Sirf purani generation (v4 se pehle ki) block ki hai taake saste naye nodes milein
-  YAML
-}
+          values: ["4"]
