@@ -61,5 +61,5 @@ jobs:
       - name: Phase 6 — Karpenter Helm
         run: terraform apply -target=helm_release.karpenter -target=kubectl_manifest.node_class -target=kubectl_manifest.node_pool_general -auto-approve
 
-     # - name: Phase 7 — Final Apply
-     #   run: terraform apply -auto-approve
+      - name: Phase 7 — Final Apply
+        run: terraform apply -auto-approve
