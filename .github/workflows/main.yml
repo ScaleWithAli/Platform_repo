@@ -43,6 +43,9 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Check Karpenter IAM Permissions
+        run: grep -r "CreateInstanceProfile" .terraform/modules/karpenter_iam/ || echo "NOT FOUND"
+
       - name: Phase 1 — Security Group
         run: terraform apply -target=aws_security_group.additional_node_sg -auto-approve
 
