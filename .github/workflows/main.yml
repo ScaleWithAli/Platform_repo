@@ -1,7 +1,7 @@
 name: Destroy Infrastructure
 
 on:
-  workflow_dispatch: # Sirf manual trigger par chalegi
+  workflow_dispatch:
 
 jobs:
   destroy:
@@ -10,25 +10,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          # Yahan 'vars' use ho raha hai
           aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ vars.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         run: terraform init
 
-      - name: Cleanup Kubernetes Webhooks (Pre-destroy)
+      - name: Pre-destroy Cleanup
         run: |
-          aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region us-east-1
-          # Webhooks ko hatao jo Terraform ko "stuck" kar dete hain
+          aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
           kubectl delete validatingwebhookconfigurations --all
           kubectl delete mutatingwebhookconfigurations --all
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve -input=false
+        run: terraform destroy -auto-approve
