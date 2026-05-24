@@ -77,7 +77,7 @@ module "eks_addons" {
           ingress = {
             enabled          = true
             ingressClassName = "nginx"
-            hosts            = ["argocd.$${var.domain_name}"]
+            hosts            = "argocd.${var.domain_name}"
             annotations = {
               "cert-manager.io/cluster-issuer"               = "letsencrypt-duckdns"
               "nginx.ingress.kubernetes.io/ssl-redirect"    = "true"
