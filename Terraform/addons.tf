@@ -15,10 +15,6 @@ module "eks_addons" {
   enable_aws_load_balancer_controller = true
   aws_load_balancer_controller = {
     enable_pod_identity = true
-    set = [{
-      name  = "vpcId"
-      value = module.vpc.vpc_id
-    }]
   }
 
   # =============================================================================
