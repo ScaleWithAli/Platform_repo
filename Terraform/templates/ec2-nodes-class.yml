@@ -21,6 +21,9 @@ spec:
         throughput: 125
         encrypted: true
         deleteOnTermination: true
+  kubelet:
+    clusterDNS:
+      - "${cluster_dns}"
   tags:
     Environment: ${environment}
     ManagedBy: Karpenter
