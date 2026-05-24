@@ -45,7 +45,7 @@ module "eks_addons" {
             type                  = "LoadBalancer"
             externalTrafficPolicy = "Local"
             annotations = {
-              "service.beta.kubernetes.io/aws-load-balancer-type"                                  = "nlb"
+              "service.beta.kubernetes.io/aws-load-balancer-type"                              = "nlb"
               "service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled" = "true"
               "service.beta.kubernetes.io/aws-load-balancer-scheme"                                = "internet-facing"
               "service.beta.kubernetes.io/aws-load-balancer-health-check-path"                     = "/healthz"
@@ -65,8 +65,9 @@ module "eks_addons" {
   }
 
   # =============================================================================
-  # ARGOCD — [ACTIVE]
+  # ARGOCD — [TEMPORARILY DISABLED VIA COMMENT]
   # =============================================================================
+  /*
   enable_argocd = true
   argocd = {
     namespace = "argocd"
@@ -77,7 +78,7 @@ module "eks_addons" {
           ingress = {
             enabled          = true
             ingressClassName = "nginx"
-            hosts            = ["argocd.${var.domain_name}"]
+            hosts            = ["argocd.$${var.domain_name}"]
             annotations = {
               "cert-manager.io/cluster-issuer"               = "letsencrypt-duckdns"
               "nginx.ingress.kubernetes.io/ssl-redirect"    = "true"
@@ -87,11 +88,10 @@ module "eks_addons" {
             tls = [
               {
                 secretName = "argocd-server-tls"
-                hosts      = ["argocd.${var.domain_name}"]
+                hosts      = ["argocd.$${var.domain_name}"]
               }
             ]
           }
-          # Prometheus active nahi hai, isliye load aur errors se bachne ke liye serviceMonitor ko false kar diya hai
           metrics = {
             enabled        = false
             serviceMonitor = { enabled = false }
@@ -112,6 +112,7 @@ module "eks_addons" {
       })
     ]
   }
+  */
 
   # =============================================================================
   # METRICS SERVER — [DISABLED]
@@ -124,7 +125,7 @@ module "eks_addons" {
   # enable_external_secrets = true
 
   # =============================================================================
-  # PROMETHEUS + GRAFANA — [DISABLED] (Asal Heavy Load Ye Tha)
+  # PROMETHEUS + GRAFANA — [DISABLED]
   # =============================================================================
   # enable_kube_prometheus_stack = true
 
