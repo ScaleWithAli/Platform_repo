@@ -7,7 +7,7 @@ resource "helm_release" "karpenter" {
   version    = "1.0.6"
   values = [
     templatefile("${path.module}/templates/karpenter-values.yaml", {
-      cluster_name     = Karpenter-${var.cluster_name}
+      cluster_name     = "Karpenter-${var.cluster_name}"
       cluster_endpoint = module.eks.cluster_endpoint
       iam_role_arn     = module.karpenter_iam.iam_role_arn
     })
