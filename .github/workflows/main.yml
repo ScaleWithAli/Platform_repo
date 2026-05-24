@@ -28,9 +28,6 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Force Clean S3 Native Lockfile
-        run: aws s3 rm s3://${{ vars.TF_STATE_BUCKET }}/cloudaura/terraform.tfstate.lockfile || true
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -43,26 +40,8 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Check Karpenter IAM Permissions
-        run: grep -r "CreateInstanceProfile" .terraform/modules/karpenter_iam/ || echo "NOT FOUND"
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
 
-      - name: Phase 1 — Security Group
-        run: terraform apply -target=aws_security_group.additional_node_sg -auto-approve
-
-      - name: Phase 2 — VPC
-        run: terraform apply -target=module.vpc -auto-approve
-
-      - name: Phase 3 — EKS
-        run: terraform apply -target=module.eks -auto-approve
-
-      - name: Phase 4 — EBS CSI IAM
-        run: terraform apply -target=aws_iam_role.ebs_csi_pod_identity -target=aws_iam_role_policy_attachment.ebs_csi_pod_identity -target=aws_eks_pod_identity_association.ebs_csi -target=aws_eks_addon.ebs_csi -auto-approve
-
-      - name: Phase 5 — Karpenter IAM
-        run: terraform apply -target=module.karpenter_iam -auto-approve
-
-      - name: Phase 6 — Karpenter Helm
-        run: terraform apply -target=helm_release.karpenter -target=kubectl_manifest.node_class -target=kubectl_manifest.node_pool_general -auto-approve
-
-      - name: Phase 7 — Final Apply
-        run: terraform apply -auto-approve
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
