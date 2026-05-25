@@ -46,16 +46,6 @@ jobs:
             -backend-config="key=cloudaura/terraform.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}"
 
-      - name: Pre-destroy Cleanup (CRDs)
-        run: |
-          if [ -z "${{ vars.CLUSTER_NAME }}" ]; then
-            echo "Error: CLUSTER_NAME variable is NOT set in GitHub Variables."
-            exit 1
-          fi
-          aws eks update-kubeconfig --name ${{ vars.CLUSTER_NAME }} --region ${{ vars.AWS_REGION }}
-          echo "Deleting all CustomResourceDefinitions to prevent orphan resources..."
-          kubectl delete crd --all --ignore-not-found=true
-
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
 
