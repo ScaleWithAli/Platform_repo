@@ -45,10 +45,10 @@ module "eks_addons" {
           "ssl-redirect"       = "false"
         }
         service = {
-          type = "LoadBalancer"
+          type = "NodePort"
           annotations = {
-            "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"
-            "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type" = "ip"
+            #"service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"
+            "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type" = "instance"
             "service.beta.kubernetes.io/aws-load-balancer-scheme" = "internet-facing"
           }
         }
@@ -65,6 +65,18 @@ module "eks_addons" {
         patchWebhookJob = {
           tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
           nodeSelector = { role = "system" }
+        }
+      }
+    })]
+  }
+  # ArgoCD Addon
+  enable_argocd = true
+  argocd = {
+    values = [yamlencode({
+      server = {
+        service = {
+          # Jab tak load balancer issue hai, NodePort use karein
+          type = "NodePort"
         }
       }
     })]
