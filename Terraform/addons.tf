@@ -13,9 +13,6 @@ module "eks_addons" {
   # AWS LOAD BALANCER CONTROLLER
   # =============================================================================
   enable_aws_load_balancer_controller = true
-  aws_load_balancer_controller = {
-    enable_pod_identity = true
-  }
 
   # =============================================================================
   # NGINX INGRESS + NLB
