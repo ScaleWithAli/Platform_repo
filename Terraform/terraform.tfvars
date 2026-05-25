@@ -10,4 +10,11 @@ eks_addons_security_config = {
     service_account = "external-secrets"
     policy_arn      = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
   }
+
+  # Image Updater ki configuration
+  argocd-image-updater = {
+    namespace       = "argocd"
+    service_account = "argocd-image-updater-sa"
+    policy_arn      = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  }
 }
