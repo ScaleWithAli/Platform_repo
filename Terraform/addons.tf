@@ -1,21 +1,37 @@
 module "eks_addons" {
-  # Version 2.x update kiya gaya hai
-  source  = "aws-ia/eks-blueprints-addons/aws"
-  version = "~> 2.0"
+  source  = "terraform-aws-modules/eks/aws//modules/eks-blueprints-addon"
+  version = "~> 20.0"
 
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
   cluster_version   = module.eks.cluster_version
   oidc_provider_arn = module.eks.oidc_provider_arn
 
-  # AWS LOAD BALANCER CONTROLLER
+  # 1. AWS LOAD BALANCER CONTROLLER (Tolerations included)
   enable_aws_load_balancer_controller = true
+  aws_load_balancer_controller_helm_config = {
+    values = [yamlencode({
+      tolerations = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
+      nodeSelector = { role = "system" }
+      webhook = {
+        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
+        nodeSelector = { role = "system" }
+      }
+    })]
+  }
 
-  # NGINX INGRESS
+  # 2. NGINX INGRESS (Tolerations & Annotations included)
   enable_ingress_nginx = true
-  ingress_nginx = {
+  ingress_nginx_helm_config = {
     values = [yamlencode({
       controller = {
+        replicaCount = 2
+        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
+        nodeSelector = { role = "system" }
+        config = {
+          "force-ssl-redirect" = "false"
+          "ssl-redirect"       = "false"
+        }
         service = {
           type = "LoadBalancer"
           annotations = {
@@ -32,16 +48,33 @@ module "eks_addons" {
     })]
   }
 
-  # ARGO CD
+  # 3. ARGO CD
   enable_argocd = true
+  argocd_helm_config = {
+    values = [yamlencode({
+      server = {
+        service = { type = "ClusterIP" }
+      }
+    })]
+  }
 
-  # KUBE PROMETHEUS STACK
+  # 4. KUBE PROMETHEUS STACK
   enable_kube_prometheus_stack = true
+  kube_prometheus_stack_helm_config = {
+    values = [yamlencode({
+      prometheus = {
+        prometheusSpec = { retention = "5d" }
+      }
+      grafana = {
+        adminPassword = "admin"
+        service = { type = "ClusterIP" }
+      }
+    })]
+  }
 
-  # CORE ADDONS
+  # 5. CORE ADDONS
   enable_metrics_server   = true
   enable_external_secrets = true
 
-  depends_on = [module.eks]
-  tags       = local.common_tags
+  tags = local.common_tags
 }
