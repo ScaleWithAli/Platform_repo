@@ -16,7 +16,7 @@ module "eks_addons" {
     })]
   }
 
-  # 2. NGINX INGRESS (With AWS Annotations)
+  # 2. NGINX INGRESS
   enable_ingress_nginx = true
   ingress_nginx = {
     values = [yamlencode({
@@ -51,9 +51,9 @@ module "eks_addons" {
     })]
   }
 
-  # 3.1 ARGO ROLLOUTS
-  enable_argocd_rollouts = true
-  argocd_rollouts = {
+  # 3.1 ARGO ROLLOUTS (Fixed Parameter Names)
+  enable_argo_rollouts = true
+  argo_rollouts = {
     values = [yamlencode({
       controller = {
         tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
