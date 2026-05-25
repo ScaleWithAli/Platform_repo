@@ -39,50 +39,6 @@ module "eks_addons" {
     })]
   }
 
-  # 3. ARGO CD
-  enable_argocd = true
-  argocd = {
-    values = [yamlencode({
-      server = {
-        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
-        nodeSelector = { role = "system" }
-      },
-      controller = {
-        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
-        nodeSelector = { role = "system" }
-      },
-      repoServer = {
-        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
-        nodeSelector = { role = "system" }
-      },
-      notifications = {
-        enabled      = true
-        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
-        nodeSelector = { role = "system" }
-      }
-    })]
-  }
-
-  # 4. ARGO ROLLOUTS
-  enable_argo_rollouts = true
-  argo_rollouts = {
-    values = [yamlencode({
-      controller = {
-        tolerations  = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }]
-        nodeSelector = { role = "system" }
-      }
-    })]
-  }
-
-  # 5. KUBE PROMETHEUS STACK
-  enable_kube_prometheus_stack = true
-  kube_prometheus_stack = {
-    values = [yamlencode({
-      prometheus = { prometheusSpec = { tolerations = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }], nodeSelector = { role = "system" } } }
-      grafana    = { tolerations = [{ key = "CriticalAddonsOnly", operator = "Equal", value = "true", effect = "NoSchedule" }], nodeSelector = { role = "system" } }
-    })]
-  }
-
   # 6. METRICS SERVER
   enable_metrics_server = true
   metrics_server = {
