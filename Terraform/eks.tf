@@ -40,7 +40,7 @@ module "eks" {
     }
   }
 
-  create_kms_key                  = true
+  create_kms_key                  = false
   kms_key_description             = "EKS cluster ${var.cluster_name} encryption key"
   kms_key_deletion_window_in_days = 7
 
