@@ -16,6 +16,7 @@ resource "random_password" "redis_pass" { length = 16 }
 resource "aws_security_group" "db_sg" {
   name        = "main-db-sg"
   description = "Access for DB and Redis"
+  vpc_id      = module.vpc.vpc_id
   
   ingress {
     from_port   = 5432
