@@ -48,5 +48,5 @@ jobs:
           # 1. Force Unlock (agar purana lock phans gaya ho)
           terraform force-unlock -force || echo "No lock to remove"
           
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
