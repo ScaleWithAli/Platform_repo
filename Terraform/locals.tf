@@ -87,8 +87,14 @@ locals {
       prometheusOperator = {
         nodeSelector = local.infra_scheduling.nodeSelector
         tolerations  = local.infra_scheduling.tolerations
+        #admissionWebhooks 
+        admissionWebhooks = {
+          patch = {
+            nodeSelector = local.infra_scheduling.nodeSelector
+            tolerations  = local.infra_scheduling.tolerations
+          }
+        }
       }
     }
-
   }
 }
