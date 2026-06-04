@@ -1,3 +1,4 @@
+/*
 resource "aws_iam_user" "cluster_admin" {
   name = "ALi-The-Warrior"
   tags = {
@@ -46,3 +47,4 @@ resource "aws_eks_access_policy_association" "cluster_admin" {
     type = "cluster"
   }
 }
+*/
