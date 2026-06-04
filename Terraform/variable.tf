@@ -22,7 +22,7 @@ variable "cluster_name" {
 
 variable "domain_name" {
   type    = string
-  default = "cloudaura.duckdns.org"
+  default = ""
 }
 
 variable "availability_zones" {
