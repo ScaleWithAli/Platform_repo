@@ -13,7 +13,7 @@ module "eks_addons" {
   enable_aws_load_balancer_controller = true
   aws_load_balancer_controller = {
     wait    = true
-    timeout = "600s" # 10 minute tak intezar karega
+    timeout = "600" # 10 minute tak intezar karega
     values = [yamlencode({
       tolerations  = local.system_scheduling.tolerations
       nodeSelector = local.system_scheduling.nodeSelector
