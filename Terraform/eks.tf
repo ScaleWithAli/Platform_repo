@@ -9,7 +9,7 @@ module "eks" {
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
-  authentication_mode         = "API"
+  authentication_mode          = "API"
   create_cloudwatch_log_group = false
 
   cluster_endpoint_public_access       = true
@@ -23,7 +23,7 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      most_recent                 = true
+      most_recent                  = true
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values = jsonencode({
@@ -33,35 +33,41 @@ module "eks" {
     }
 
     kube-proxy = {
-      most_recent                 = true
+      most_recent                  = true
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
     }
 
     vpc-cni = {
-      most_recent                 = true
+      most_recent                  = true
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
     }
+
     aws-ebs-csi-driver = {
       most_recent                 = true
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
-      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+
       configuration_values = jsonencode({
-       controller = {
-        nodeSelector = local.system_scheduling.nodeSelector
-        tolerations  = local.system_scheduling.tolerations
-     }
-     node = {
-      nodeSelector = local.system_scheduling.nodeSelector
-      tolerations  = local.system_scheduling.tolerations
+        controller = {
+          serviceAccount = {
+            annotations = {
+              "eks.amazonaws.com/role-arn" = null
+            }
+          }
+          nodeSelector = local.system_scheduling.nodeSelector
+          tolerations  = local.system_scheduling.tolerations
+        },
+        node = {
+          nodeSelector = local.system_scheduling.nodeSelector
+          tolerations  = local.system_scheduling.tolerations
+        }
+      })
     }
-  })
-}
-   
+
     eks-pod-identity-agent = {
-      most_recent                 = true
+      most_recent                  = true
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
     }
