@@ -11,23 +11,27 @@ locals {
 # 1. Random Secrets
 # ─────────────────────────────────────────────
 
-resource "random_password" "db_pass" {
-  for_each         = { for k, v in local.services : k => v if v.rds }
-  length           = 16
-  special          = true
-  override_special = "!#$%^&*()_+-=[]{}|"
+# RDS admin access ke liye Master Password
+resource "random_password" "master_db_pass" {
+  length  = 24
+  special = true
+}
+
+# Har service ke liye alag database password
+resource "random_password" "service_db_pass" {
+  for_each = { for k, v in local.services : k => v if v.rds }
+  length   = 16
+  special  = true
 }
 
 resource "random_password" "jwt_secret" {
-  length           = 32
-  special          = true
-  override_special = "!#$%^&*()_+-=[]{}|"
+  length  = 32
+  special = true
 }
 
 resource "random_password" "redis_pass" {
-  length           = 16
-  special          = true
-  override_special = "!#$%^&*()_+-=[]{}|"
+  length  = 16
+  special = true
 }
 
 # ─────────────────────────────────────────────
@@ -83,9 +87,9 @@ resource "aws_db_instance" "main_db" {
   engine                 = "postgres"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
-  db_name                = "main_db"
-  username               = "postgres"
-  password               = random_password.db_pass.result
+  db_name                = "postgres"
+  username               = "admin_user"
+  password               = random_password.master_db_pass.result
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
   skip_final_snapshot    = true
@@ -116,14 +120,16 @@ resource "aws_secretsmanager_secret_version" "secrets_val" {
   secret_id = aws_secretsmanager_secret.service_secrets[each.key].id
 
   secret_string = jsonencode(merge(
-    local.services[each.key].needs_jwt ? { JWT_SECRET   = random_password.jwt_secret.result } : {},
-    each.value.rds ? { DATABASE_URL = "postgresql://${each.key}_user:${random_password.db_pass[each.key].result}@${aws_db_instance.main_db.address}:5432/${each.key}_db" } : {},
-    local.services[each.key].redis     ? { REDIS_URL    = "redis://:${random_password.redis_pass.result}@${aws_elasticache_cluster.main_redis.cache_nodes[0].address}:6379" } : {}
+    local.services[each.key].needs_jwt ? { JWT_SECRET = random_password.jwt_secret.result } : {},
+    local.services[each.key].rds ? { 
+        DATABASE_URL = "postgresql://${each.key}_user:${random_password.service_db_pass[each.key].result}@${aws_db_instance.main_db.address}:5432/${each.key}_db" 
+    } : {},
+    local.services[each.key].redis ? { REDIS_URL = "redis://:${random_password.redis_pass.result}@${aws_elasticache_cluster.main_redis.cache_nodes[0].address}:6379" } : {}
   ))
 }
 
 # ─────────────────────────────────────────────
-# 6. Database Auto-Creation
+# 6. Database & User Auto-Creation
 # ─────────────────────────────────────────────
 
 resource "null_resource" "init_db" {
@@ -131,17 +137,15 @@ resource "null_resource" "init_db" {
   for_each   = { for k, v in local.services : k => v if v.rds }
 
   provisioner "local-exec" {
-    command = "psql -h ${aws_db_instance.main_db.address} -U postgres -d postgres -c 'CREATE DATABASE ${each.key}_db;' || true"
-  provisioner "local-exec" {
     command = <<-EOT
-      psql -h ${aws_db_instance.main_db.address} -U postgres -d postgres \
+      psql -h ${aws_db_instance.main_db.address} -U admin_user -d postgres \
         -c 'CREATE DATABASE ${each.key}_db;' \
-        -c 'CREATE USER ${each.key}_user WITH PASSWORD ''${random_password.db_pass[each.key].result}'';' \
+        -c 'CREATE USER ${each.key}_user WITH PASSWORD ''${random_password.service_db_pass[each.key].result}'';' \
         -c 'GRANT ALL PRIVILEGES ON DATABASE ${each.key}_db TO ${each.key}_user;' || true
     EOT
 
     environment = {
-      PGPASSWORD = random_password.db_pass.result
+      PGPASSWORD = random_password.master_db_pass.result
     }
   }
 }
