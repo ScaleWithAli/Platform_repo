@@ -13,9 +13,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Platform_repo/k8s-manifest
+    repoURL: https://github.com/muhammadali792/Platform_repo
     targetRevision: main
-    path: helm/microservice
+    path: k8s-manifest/helm/microservice
     helm:
       valueFiles:
       - ../services/order-values.yaml
