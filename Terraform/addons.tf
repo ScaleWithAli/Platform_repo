@@ -27,8 +27,6 @@ module "eks_addons" {
   # LB Controller
   enable_aws_load_balancer_controller = true
   aws_load_balancer_controller = {
-    wait    = true
-    timeout = "600"
     values = [yamlencode({
       tolerations  = local.system_scheduling.tolerations
       nodeSelector = local.system_scheduling.nodeSelector
