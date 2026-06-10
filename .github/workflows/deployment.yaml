@@ -6,7 +6,10 @@ on:
 defaults:
   run:
     working-directory: ./k8s-manifest
-
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
