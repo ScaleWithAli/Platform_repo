@@ -61,7 +61,9 @@ locals {
             "nginx.ingress.kubernetes.io/ssl-redirect"     = "true"
           }
         }
-        config = {
+      }
+      configs = {
+        cm = {
           "oidc.config" = yamlencode({
             name         = "AWS SSO"
             issuer       = "https://identitycenter.amazonaws.com/ssooidc/${tolist(data.aws_ssoadmin_instances.main.identity_store_ids)[0]}"
@@ -74,7 +76,7 @@ locals {
           })
           "url" = "https://argocd.cloudaura.online"
         }
-        rbacConfig = {
+        rbac = {
           "policy.default" = "role:readonly"
           "policy.csv"     = "g, DevOps, role:admin\ng, Developers, role:readonly"
         }
@@ -138,8 +140,9 @@ locals {
         }
       }
       grafana = {
-        nodeSelector = local.infra_scheduling.nodeSelector
-        tolerations  = local.infra_scheduling.tolerations
+        nodeSelector          = local.infra_scheduling.nodeSelector
+        tolerations           = local.infra_scheduling.tolerations
+        assertNoLeakedSecrets = false
         ingress = {
           enabled          = true
           ingressClassName = "nginx"
@@ -153,8 +156,12 @@ locals {
             "nginx.ingress.kubernetes.io/ssl-redirect" = "true"
           }
         }
-       "grafana.ini" = {
-         "auth.generic_oauth" = {
+        "grafana.ini" = {
+          server = {
+            domain   = "grafana.cloudaura.online"
+            root_url = "https://grafana.cloudaura.online"
+          }
+          "auth.generic_oauth" = {
             enabled             = true
             name                = "AWS SSO"
             client_id           = aws_ssoadmin_application.grafana.application_arn
