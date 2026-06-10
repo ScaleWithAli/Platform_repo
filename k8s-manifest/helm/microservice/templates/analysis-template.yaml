@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  metrics:
+  - name: success-rate
+    interval: 30s
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://prometheus:9090
+        query: |
+          sum(rate(http_requests_total{
+            app="{{ .Release.Name }}",
+            status!~"5.."
+          }[2m])) /
+          sum(rate(http_requests_total{
+            app="{{ .Release.Name }}"
+          }[2m]))
+    successCondition: result[0] >= 0.95
