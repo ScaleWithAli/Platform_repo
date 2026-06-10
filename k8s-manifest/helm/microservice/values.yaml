@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   name: ""
   registry: 351849325312.dkr.ecr.eu-north-1.amazonaws.com
-  tag: "latest"
+  tag: latest
 
 service:
   port: 3000
