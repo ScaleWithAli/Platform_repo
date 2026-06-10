@@ -47,7 +47,7 @@ locals {
       server = {
         nodeSelector = local.infra_scheduling.nodeSelector
         tolerations  = local.infra_scheduling.tolerations
-         metrics = {
+        metrics = {
           enabled = true
         }
         ingress = {
@@ -57,9 +57,25 @@ locals {
           tls              = true
           annotations = {
             "cert-manager.io/cluster-issuer"               = "letsencrypt-prod"
-            "nginx.ingress.kubernetes.io/ssl-redirect" = "true"
             "nginx.ingress.kubernetes.io/backend-protocol" = "HTTPS"
+            "nginx.ingress.kubernetes.io/ssl-redirect"     = "true"
           }
+        }
+        config = {
+          "oidc.config" = yamlencode({
+            name         = "AWS SSO"
+            issuer       = "https://identitycenter.amazonaws.com/ssooidc/${tolist(data.aws_ssoadmin_instances.main.identity_store_ids)[0]}"
+            clientID     = aws_ssoadmin_application.argocd.application_arn
+            clientSecret = "$oidc.clientSecret"
+            requestedScopes = ["openid", "profile", "email"]
+            requestedIDTokenClaims = {
+              groups = { essential = true }
+            }
+          })
+        }
+        rbacConfig = {
+          "policy.default" = "role:readonly"
+          "policy.csv"     = "g, DevOps, role:admin\ng, Developers, role:readonly"
         }
       }
       controller = {
@@ -69,11 +85,10 @@ locals {
           enabled = true
         }
       }
-
       repoServer = {
         nodeSelector = local.infra_scheduling.nodeSelector
         tolerations  = local.infra_scheduling.tolerations
-         metrics = {
+        metrics = {
           enabled = true
         }
       }
@@ -133,13 +148,27 @@ locals {
             hosts      = ["grafana.cloudaura.online"]
           }]
           annotations = {
-            "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
+            "cert-manager.io/cluster-issuer"           = "letsencrypt-prod"
             "nginx.ingress.kubernetes.io/ssl-redirect" = "true"
+          }
+        }
+        grafana_ini = {
+          auth_generic_oauth = {
+            enabled             = true
+            name                = "AWS SSO"
+            client_id           = aws_ssoadmin_application.grafana.application_arn
+            client_secret       = "$__secretsmanager:grafana/oidc-secret:oidc_client_secret"
+            scopes              = "openid profile email"
+            auth_url            = "https://identitycenter.amazonaws.com/ssooidc/${tolist(data.aws_ssoadmin_instances.main.identity_store_ids)[0]}/authorize"
+            token_url           = "https://identitycenter.amazonaws.com/ssooidc/${tolist(data.aws_ssoadmin_instances.main.identity_store_ids)[0]}/token"
+            api_url             = "https://identitycenter.amazonaws.com/ssooidc/${tolist(data.aws_ssoadmin_instances.main.identity_store_ids)[0]}/userinfo"
+            allow_sign_up       = true
+            role_attribute_path = "contains(groups[*], 'DevOps') && 'Admin' || 'Viewer'"
           }
         }
       }
       kube-state-metrics = {
-        enabled = true
+        enabled      = true
         nodeSelector = local.infra_scheduling.nodeSelector
         tolerations  = local.infra_scheduling.tolerations
       }
