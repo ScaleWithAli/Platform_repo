@@ -31,7 +31,17 @@ networkPolicy:
   allowTo: []
 
 rollout:
-  enabled: false
+  enabled: true
+  canary:
+    autoRollback: true
+    steps:
+    - setWeight: 10
+    - pause:
+        duration: 60s
+    - setWeight: 50
+    - pause:
+        duration: 60s
+    - setWeight: 100
 
 env:
   jwt:
