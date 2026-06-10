@@ -1,0 +1,30 @@
+name: Bootstrap ArgoCD
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./k8s-manifest
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig \
+          --name ${{ secrets.EKS_CLUSTER_NAME }} \
+          --region ${{ secrets.AWS_REGION }}
+
+    - name: Apply root app
+      run: |
+        kubectl apply -f argocd/root-app.yaml
