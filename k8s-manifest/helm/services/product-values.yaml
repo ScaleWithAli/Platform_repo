@@ -1,6 +1,8 @@
 replicaCount: 2
 image:
-  name: product-service
+  registry: ""
+  name: ""
+  tag: ""
 
 service:
   port: 8001
