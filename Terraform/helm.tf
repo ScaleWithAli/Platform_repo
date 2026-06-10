@@ -76,7 +76,7 @@ resource "kubectl_manifest" "cluster_issuer" {
               class: nginx
   YAML
 
-  depends_on = [helm_release.cert_manager]
+  depends_on = [helm_release.cert_manager, helm_release.nginx_ingress]
 }
 
 resource "helm_release" "argocd_image_updater" {
