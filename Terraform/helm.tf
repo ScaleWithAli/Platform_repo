@@ -41,6 +41,10 @@ resource "helm_release" "cert_manager" {
 
     tolerations  = local.infra_scheduling.tolerations
     nodeSelector = local.infra_scheduling.nodeSelector
+    acmesolver = {
+      tolerations  = local.infra_scheduling.tolerations
+      nodeSelector = local.infra_scheduling.nodeSelector
+    }
 
     cainjector = {
       tolerations  = local.infra_scheduling.tolerations
