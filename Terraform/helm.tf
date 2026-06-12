@@ -97,7 +97,7 @@ resource "helm_release" "argocd_image_updater" {
         name       = "ECR"
         api_url    = "https://${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
         prefix      = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
-        credentials = "ext:/scripts/ecr-login.sh"
+        redentials = "ext:/usr/bin/aws ecr get-login-password --region ${var.aws_region}"
         credsexpire = "12h"
       }]
       gitCredentials = [{
