@@ -114,7 +114,9 @@ resource "helm_release" "argocd_image_updater" {
       scripts = {
         "ecr-login.sh" = <<-EOF
         #!/bin/sh
-        aws ecr --region ${var.aws_region} get-login-password --output text
+        # ECR requires username 'AWS' and the password as the token
+        TOKEN=$(aws ecr --region ${var.aws_region} get-login-password)
+        echo "AWS:$TOKEN"
         EOF
       }
     }
