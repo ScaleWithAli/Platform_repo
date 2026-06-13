@@ -2,11 +2,10 @@ replicaCount: 2
 image:
   registry: "351849325312.dkr.ecr.eu-north-1.amazonaws.com"
   name: auth-repo
-  tag: "60545987853ef158132f73c0e8576cf1b047f66c"
-
+  tag: "v1.0.31"
+  repository: 351849325312.dkr.ecr.eu-north-1.amazonaws.com/auth-repo
 service:
   port: 8000
-
 resources:
   requests:
     cpu: 100m
@@ -14,10 +13,8 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-
 migration:
   enabled: false
-
 ingress:
   enabled: true
   host: auth.cloudaura.online
@@ -27,19 +24,16 @@ ingress:
   mtls:
     enabled: false
     secretName: auth-mtls-secret
-
 hpa:
   enabled: true
   minReplicas: 2
   maxReplicas: 4
   cpuUtilization: 70
-
 networkPolicy:
   enabled: true
   allowFrom:
-    - order-service
+  - order-service
   allowTo: []
-
 rollout:
   enabled: false
   canary:
@@ -52,7 +46,6 @@ rollout:
     - pause:
         duration: 60s
     - setWeight: 100
-
 env:
   jwt:
     enabled: true
