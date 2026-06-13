@@ -12,6 +12,7 @@ spec:
   applicationRefs:
   - namePattern: "auth-service"
     writeBackConfig:
+      method: "git"
       gitConfig:
         writeBackTarget: "helmvalues:../services/auth-values.yaml"
     images:
@@ -26,6 +27,7 @@ spec:
           tag: image.tag
   - namePattern: "order-service"
     writeBackConfig:
+      method: "git"
       gitConfig:
         writeBackTarget: "helmvalues:../services/order-values.yaml"
     images:
@@ -40,6 +42,7 @@ spec:
           tag: image.tag
   - namePattern: "product-service"
     writeBackConfig:
+      method: "git"
       gitConfig:
         writeBackTarget: "helmvalues:../services/product-values.yaml"
     images:
@@ -54,6 +57,7 @@ spec:
           tag: image.tag
   - namePattern: "notif-service"
     writeBackConfig:
+      method: "git"
       gitConfig:
         writeBackTarget: "helmvalues:../services/notif-values.yaml"
     images:
