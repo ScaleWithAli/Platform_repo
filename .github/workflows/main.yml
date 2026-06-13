@@ -49,4 +49,4 @@ jobs:
           terraform force-unlock -force || echo "No lock to remove"
          
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform destroy -auto-approve
