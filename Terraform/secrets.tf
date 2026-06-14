@@ -71,7 +71,7 @@ resource "aws_security_group" "db_sg" {
 
 resource "aws_db_subnet_group" "main" {
   name       = "main-db-subnet-group"
-  subnet_ids = module.vpc.private_subnets
+  subnet_ids = module.vpc.public_subnets
 }
 
 resource "aws_elasticache_subnet_group" "main" {
