@@ -145,7 +145,7 @@ resource "null_resource" "init_db" {
         -c 'CREATE DATABASE ${each.key}_db;' \
         -c "CREATE USER ${each.key}_user WITH PASSWORD '${random_password.service_db_pass[each.key].result}';" \
         -c "ALTER USER ${each.key}_user WITH PASSWORD '${random_password.service_db_pass[each.key].result}';" \
-        -c 'GRANT ALL PRIVILEGES ON DATABASE ${each.key}_db TO ${each.key}_user;' || true
+        -c 'GRANT ALL PRIVILEGES ON DATABASE ${each.key}_db TO ${each.key}_user;' || false
     EOT
 
     environment = {
