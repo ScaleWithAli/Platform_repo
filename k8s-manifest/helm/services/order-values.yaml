@@ -43,3 +43,6 @@ env:
     enabled: true
   redis:
     enabled: true
+  extra:
+    AUTH_SERVICE_URL: "http://auth-service.auth.svc.cluster.local:8000"
+    PRODUCT_SERVICE_URL: "http://product-service.product.svc.cluster.local:8001"
