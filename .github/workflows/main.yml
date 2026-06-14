@@ -51,5 +51,5 @@ jobs:
       - name: Install PostgreSQL Client
         run: sudo apt-get install -y postgresql-client
          
-      - name: Terraform Apply
-        run: terraform apply -target=null_resource.init_db -auto-approve
+      - name: Terraform Destroy
+        run: terraform destroy -target=null_resource.init_db -target=aws_db_instance.main_db -target=aws_security_group.db_sg -auto-approve
