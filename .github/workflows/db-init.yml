@@ -1,0 +1,35 @@
+name: "DB Init"
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+defaults:
+  run:
+    working-directory: ./Terraform
+jobs:
+  db_init:
+    name: "DB Init"
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init -upgrade \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=cloudaura/terraform.tfstate" \
+            -backend-config="region=${{ vars.AWS_REGION }}"
+      
+      - name: Apply null_resource
+        run: terraform apply -target=null_resource.init_db -auto-approve
