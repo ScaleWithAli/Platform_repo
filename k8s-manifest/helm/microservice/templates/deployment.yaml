@@ -46,7 +46,7 @@ spec:
           limits:
             cpu: {{ .Values.resources.limits.cpu }}
             memory: {{ .Values.resources.limits.memory }}
-        {{- if or .Values.env.jwt.enabled .Values.env.db.enabled .Values.env.redis.enabled }}
+        {{- if or .Values.env.jwt.enabled .Values.env.db.enabled .Values.env.redis.enabled .Values.env.extra }}
         env:
         {{- if .Values.env.jwt.enabled }}
         - name: JWT_SECRET
@@ -68,6 +68,12 @@ spec:
             secretKeyRef:
               name: {{ .Release.Name }}-secrets
               key: REDIS_URL
+        {{- end }}
+        {{- if .Values.env.extra }}
+        {{- range $key, $value := .Values.env.extra }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
         {{- end }}
         {{- end }}
 {{- end }}
