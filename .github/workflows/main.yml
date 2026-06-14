@@ -52,4 +52,4 @@ jobs:
         run: sudo apt-get install -y postgresql-client
          
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -target=null_resource.init_db -auto-approve
