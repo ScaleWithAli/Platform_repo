@@ -59,7 +59,7 @@ spec:
     writeBackConfig:
       method: "git"
       gitConfig:
-        writeBackTarget: "helmvalues:../services/ frontend-value.yml"
+        writeBackTarget: "helmvalues:../services/frontend-value.yml"
     images:
     - alias: "app"
       imageName: "351849325312.dkr.ecr.eu-north-1.amazonaws.com/frontend-repo"
