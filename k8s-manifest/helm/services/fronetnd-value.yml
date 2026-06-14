@@ -1,0 +1,40 @@
+replicaCount: 1
+image:
+  name: frontend-repo
+  registry: "351849325312.dkr.ecr.eu-north-1.amazonaws.com"
+  tag: latest
+service:
+  port: 80
+migration:
+  enabled: false
+ingress:
+  enabled: true
+  host: cloudaura.online
+  port: 80
+  tls:
+    enabled: true
+  mtls:
+    enabled: false
+    secretName: ""
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  cpuUtilization: 70
+networkPolicy:
+  enabled: false
+  allowFrom: []
+  allowTo: []
+rollout:
+  enabled: false
+  canary:
+    autoRollback: false
+    steps: []
+env:
+  jwt:
+    enabled: false
+  db:
+    enabled: false
+  redis:
+    enabled: false
+  extra: {}
