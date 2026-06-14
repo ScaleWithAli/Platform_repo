@@ -37,4 +37,8 @@ env:
     enabled: false
   redis:
     enabled: false
-  extra: {}
+  extra: 
+    VITE_AUTH_URL: "https://auth.cloudaura.online"
+    VITE_PRODUCT_URL: "https://product.cloudaura.online"
+    VITE_ORDER_URL: "https://order.cloudaura.online"
+    VITE_NOTIF_URL: "https://notif.cloudaura.online"
