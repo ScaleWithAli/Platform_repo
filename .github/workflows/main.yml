@@ -47,6 +47,9 @@ jobs:
         run: |
           # 1. Force Unlock (agar purana lock phans gaya ho)
           terraform force-unlock -force || echo "No lock to remove"
+          
+      - name: Install PostgreSQL Client
+        run: sudo apt-get install -y postgresql-client
          
       - name: Terraform Apply
         run: terraform apply -auto-approve
