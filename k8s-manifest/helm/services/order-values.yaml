@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   name: order-repo
   registry: "351849325312.dkr.ecr.eu-north-1.amazonaws.com"
-  tag: v1.0.34
+  tag: v1.0.40
   repository: 351849325312.dkr.ecr.eu-north-1.amazonaws.com/order-repo
 service:
   port: 8002
