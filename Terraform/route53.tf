@@ -1,4 +1,3 @@
-/*
 data "kubernetes_service" "nginx_ingress" {
   metadata {
     name      = "ingress-nginx-controller"
@@ -41,4 +40,3 @@ resource "aws_route53_record" "wildcard" {
     evaluate_target_health = true
   }
 }
-*/
