@@ -2,7 +2,8 @@ replicaCount: 1
 image:
   name: frontend-repo
   registry: "351849325312.dkr.ecr.eu-north-1.amazonaws.com"
-  tag: v1.0.54
+  tag: v1.0.61
+  repository: 351849325312.dkr.ecr.eu-north-1.amazonaws.com/frontend-repo
 service:
   port: 80
 migration:
@@ -37,7 +38,7 @@ env:
     enabled: false
   redis:
     enabled: false
-  extra: 
+  extra:
     VITE_AUTH_URL: "https://auth.cloudaura.online"
     VITE_PRODUCT_URL: "https://product.cloudaura.online"
     VITE_ORDER_URL: "https://order.cloudaura.online"
