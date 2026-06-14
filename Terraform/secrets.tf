@@ -47,7 +47,7 @@ resource "aws_security_group" "db_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [module.vpc.vpc_cidr_block]
   }
 
   ingress {
@@ -71,7 +71,7 @@ resource "aws_security_group" "db_sg" {
 
 resource "aws_db_subnet_group" "main" {
   name       = "main-db-subnet-group"
-  subnet_ids = module.vpc.public_subnets
+  subnet_ids = module.vpc.private_subnets
 }
 
 resource "aws_elasticache_subnet_group" "main" {
@@ -93,7 +93,6 @@ resource "aws_db_instance" "main_db" {
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
   skip_final_snapshot    = true
-  publicly_accessible    = true
 }
 
 resource "aws_elasticache_cluster" "main_redis" {
