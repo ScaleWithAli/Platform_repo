@@ -44,7 +44,7 @@ spec:
     writeBackConfig:
       method: "git"
       gitConfig:
-        writeBackTarget: "helmvalues:../services/product-values.yaml"
+        writeBackTarget: "helmvalues:../services/product-value.yml"
     images:
     - alias: "app"
       imageName: "351849325312.dkr.ecr.eu-north-1.amazonaws.com/product-repo"
