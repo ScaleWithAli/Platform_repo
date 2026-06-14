@@ -34,4 +34,4 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y postgresql-client-16
         
       - name: Apply null_resource
-        run: terraform apply -target=null_resource.init_db -auto-approve
+        run: terraform destroy -target=null_resource.init_db -auto-approve
