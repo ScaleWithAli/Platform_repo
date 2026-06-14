@@ -1,5 +1,5 @@
 locals {
-  service_names = ["auth", "product", "order", "notif"]
+  service_names = ["auth", "product", "order", "notif", "frontend"]
 }
 
 resource "aws_ecr_repository" "service_repos" {
