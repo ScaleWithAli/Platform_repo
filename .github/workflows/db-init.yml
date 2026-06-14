@@ -31,7 +31,7 @@ jobs:
             -backend-config="key=cloudaura/terraform.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}"
       - name: Install PostgreSQL Client
-        run: sudo apt-get install -y postgresql-client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client-16
         
       - name: Apply null_resource
         run: terraform apply -target=null_resource.init_db -auto-approve
