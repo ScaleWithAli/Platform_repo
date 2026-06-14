@@ -55,6 +55,21 @@ spec:
         helm:
           name: image.repository
           tag: image.tag
+  - namePattern: "frontend"
+    writeBackConfig:
+      method: "git"
+      gitConfig:
+        writeBackTarget: "helmvalues:../services/frontend-values.yaml"
+    images:
+    - alias: "app"
+      imageName: "351849325312.dkr.ecr.eu-north-1.amazonaws.com/frontend-repo"
+      commonUpdateSettings:
+        updateStrategy: "semver"
+        allowTags: "regexp:^v\\d+\\.\\d+\\.\\d+$"
+      manifestTargets:
+        helm:
+          name: image.repository
+          tag: image.tag
   - namePattern: "notif-service"
     writeBackConfig:
       method: "git"
