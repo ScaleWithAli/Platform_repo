@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   name: frontend-repo
   registry: "351849325312.dkr.ecr.eu-north-1.amazonaws.com"
-  tag: v1.0.67
+  tag: v1.0.69
   repository: 351849325312.dkr.ecr.eu-north-1.amazonaws.com/frontend-repo
 service:
   port: 80
