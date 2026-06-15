@@ -2,7 +2,7 @@ replicaCount: 2
 image:
   registry: "351849325312.dkr.ecr.eu-north-1.amazonaws.com"
   name: auth-repo
-  tag: "v1.0.64"
+  tag: "v1.0.68"
   repository: 351849325312.dkr.ecr.eu-north-1.amazonaws.com/auth-repo
 service:
   port: 8000
