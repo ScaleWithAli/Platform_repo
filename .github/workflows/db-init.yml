@@ -35,7 +35,8 @@ jobs:
             -backend-config="region=${{ vars.AWS_REGION }}"
       - name: Install PostgreSQL Client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client-16
-        
+      - name: Remove old Redis from state
+        run: terraform state rm aws_elasticache_cluster.main_redis || true  
       - name: Apply null_resource
         run: |
           terraform apply -target=random_password.master_db_pass -auto-approve
