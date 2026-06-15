@@ -13,7 +13,7 @@
 
 ## 🧠 Why I Built This
 
-Most DevOps projects stop at "deploy a container." This project goes further — every architectural decision has a real-world reason behind it: node isolation to prevent noisy-neighbor problems, Karpenter for cost-optimized autoscaling, External Secrets so credentials never touch Git, and a shared Helm chart so new services take minutes to onboard.
+"This platform serves as a standardized blueprint for rapid microservice adoption. By abstracting deployment logic into shared Helm charts and automating security via OIDC, it allows other engineers to onboard new services in minutes—not days—while ensuring the underlying infrastructure remains production-ready and secure."
 
 ---
 
