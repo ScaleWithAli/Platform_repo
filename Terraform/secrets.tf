@@ -11,13 +11,11 @@ locals {
 # 1. Random Secrets
 # ─────────────────────────────────────────────
 
-# RDS admin access ke liye Master Password
 resource "random_password" "master_db_pass" {
   length  = 24
   special = false
 }
 
-# Har service ke liye alag database password
 resource "random_password" "service_db_pass" {
   for_each = { for k, v in local.services : k => v if v.rds }
   length   = 16
@@ -95,14 +93,16 @@ resource "aws_db_instance" "main_db" {
   skip_final_snapshot    = true
 }
 
-resource "aws_elasticache_cluster" "main_redis" {
-  cluster_id         = "main-redis"
-  engine             = "redis"
-  node_type          = "cache.t4g.micro"
-  num_cache_nodes    = 1
-  security_group_ids = [aws_security_group.db_sg.id]
-  subnet_group_name  = aws_elasticache_subnet_group.main.name
-  port               = 6379
+resource "aws_elasticache_replication_group" "main_redis" {
+  replication_group_id       = "main-redis"
+  description                = "Main Redis cluster"
+  node_type                  = "cache.t4g.micro"
+  num_cache_clusters         = 1
+  port                       = 6379
+  security_group_ids         = [aws_security_group.db_sg.id]
+  subnet_group_name          = aws_elasticache_subnet_group.main.name
+  auth_token                 = random_password.redis_pass.result
+  transit_encryption_enabled = true
 }
 
 # ─────────────────────────────────────────────
@@ -121,10 +121,12 @@ resource "aws_secretsmanager_secret_version" "secrets_val" {
 
   secret_string = jsonencode(merge(
     local.services[each.key].needs_jwt ? { JWT_SECRET = random_password.jwt_secret.result } : {},
-    local.services[each.key].rds ? { 
-        DATABASE_URL = "postgresql://${each.key}_user:${random_password.service_db_pass[each.key].result}@${aws_db_instance.main_db.address}:5432/${each.key}_db?sslmode=require" 
+    local.services[each.key].rds ? {
+      DATABASE_URL = "postgresql://${each.key}_user:${random_password.service_db_pass[each.key].result}@${aws_db_instance.main_db.address}:5432/${each.key}_db?sslmode=require"
     } : {},
-    local.services[each.key].redis ? { REDIS_URL = "redis://:${random_password.redis_pass.result}@${aws_elasticache_cluster.main_redis.cache_nodes[0].address}:6379" } : {}
+    local.services[each.key].redis ? {
+      REDIS_URL = "rediss://:${random_password.redis_pass.result}@${aws_elasticache_replication_group.main_redis.primary_endpoint_address}:6379"
+    } : {}
   ))
 }
 
@@ -139,6 +141,7 @@ resource "null_resource" "init_db" {
   triggers = {
     password = random_password.service_db_pass[each.key].result
   }
+
   provisioner "local-exec" {
     command = <<-EOT
       psql -h ${aws_db_instance.main_db.address} -U admin_user -d postgres \
