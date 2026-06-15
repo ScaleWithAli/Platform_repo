@@ -102,13 +102,13 @@ AWS Managed Services
 
 │   ├── eks.tf              # EKS cluster, node groups, taints
 
-│   ├── eks-addons.tf       # NGINX, External Secrets, LB Controller
+│   ├── addons.tf       # NGINX, External Secrets, LB Controller
 
-│   ├── helm-releases.tf    # ArgoCD, Prometheus, Istio, Karpenter
+│   ├── helm.tf    # ArgoCD, Prometheus, Istio, Karpenter
 
 │   ├── secrets.tf          # RDS, Redis, Secrets Manager
 
-│   ├── networking.tf       # VPC, subnets, Route53, NLB
+│   ├── vpc.tf       # VPC, subnets, Route53, NLB
 
 │   ├── security.tf         # IAM, Pod Identity, Security Groups
 
