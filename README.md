@@ -1,4 +1,4 @@
-markdown# ☁️ CloudAura — Production-Grade Microservices Platform on AWS EKS
+# ☁️ CloudAura — Production-Grade Microservices Platform on AWS EKS
 
 ![AWS](https://img.shields.io/badge/AWS-EKS-FF9900?logo=amazon-aws&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform)
