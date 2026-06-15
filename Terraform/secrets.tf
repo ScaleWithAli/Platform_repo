@@ -97,12 +97,13 @@ resource "aws_elasticache_replication_group" "main_redis" {
   replication_group_id       = "main-redis"
   description                = "Main Redis cluster"
   node_type                  = "cache.t4g.micro"
-  num_cache_clusters         = 1
+  num_cache_clusters         = 2
   port                       = 6379
   security_group_ids         = [aws_security_group.db_sg.id]
   subnet_group_name          = aws_elasticache_subnet_group.main.name
   auth_token                 = random_password.redis_pass.result
   transit_encryption_enabled = true
+  automatic_failover_enabled = true
 }
 
 # ─────────────────────────────────────────────
