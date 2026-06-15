@@ -124,7 +124,7 @@ resource "aws_secretsmanager_secret_version" "secrets_val" {
     local.services[each.key].rds ? { 
         DATABASE_URL = "postgresql://${each.key}_user:${random_password.service_db_pass[each.key].result}@${aws_db_instance.main_db.address}:5432/${each.key}_db?sslmode=require" 
     } : {},
-    local.services[each.key].redis ? { REDIS_URL = "redis://:${random_password.redis_pass.result}@${aws_elasticache_cluster.main_redis.cache_nodes[0].address}:6379?ssl=true" } : {}
+    local.services[each.key].redis ? { REDIS_URL = "redis://:${random_password.redis_pass.result}@${aws_elasticache_cluster.main_redis.cache_nodes[0].address}:6379" } : {}
   ))
 }
 
