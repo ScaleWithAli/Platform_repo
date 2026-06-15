@@ -1,6 +1,9 @@
 name: "DB Init"
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  #workflow_dispatch:
 permissions:
   id-token: write
   contents: read
