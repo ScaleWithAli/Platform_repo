@@ -103,7 +103,6 @@ resource "aws_elasticache_replication_group" "main_redis" {
   subnet_group_name          = aws_elasticache_subnet_group.main.name
   auth_token                 = random_password.redis_pass.result
   transit_encryption_enabled = true
-  automatic_failover_enabled = true
 }
 
 # ─────────────────────────────────────────────
