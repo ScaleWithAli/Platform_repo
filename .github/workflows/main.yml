@@ -12,7 +12,7 @@ defaults:
     working-directory: ./Terraform
 
 jobs:
-  terraform_destroy:
+  terraform_Apply:
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     steps:
@@ -42,14 +42,6 @@ jobs:
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=cloudaura/terraform.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION }}"
-
-      - name: Handle Stale Locks and Imports
-        run: |
-          # 1. Force Unlock (agar purana lock phans gaya ho)
-          terraform force-unlock -force || echo "No lock to remove"
-          
-      - name: Install PostgreSQL Client
-        run: sudo apt-get install -y postgresql-client
          
       - name: Terraform Apply 
         run: terraform apply  -auto-approve
