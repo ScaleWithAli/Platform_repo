@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-  #workflow_dispatch:
 permissions:
   id-token: write
   contents: read
@@ -39,15 +38,4 @@ jobs:
         run: terraform state rm aws_elasticache_cluster.main_redis || true  
       - name: Apply null_resource
         run: |
-          terraform apply -target=random_password.master_db_pass -auto-approve
-          terraform apply -target=random_password.service_db_pass -auto-approve
-          terraform apply -target=random_password.jwt_secret -auto-approve
-          terraform apply -target=random_password.redis_pass -auto-approve
-          terraform apply -target=aws_security_group.db_sg -auto-approve
-          terraform apply -target=aws_db_subnet_group.main -auto-approve
-          terraform apply -target=aws_elasticache_subnet_group.main -auto-approve
-          terraform apply -target=aws_db_instance.main_db -auto-approve
-          terraform apply -target=aws_elasticache_replication_group.main_redis -auto-approve
-          terraform apply -target=aws_secretsmanager_secret.service_secrets -auto-approve
-          terraform apply -target=aws_secretsmanager_secret_version.secrets_val -auto-approve
           terraform apply -target=null_resource.init_db -auto-approve
